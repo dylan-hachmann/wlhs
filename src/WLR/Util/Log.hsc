@@ -6,6 +6,7 @@ module WLR.Util.Log where
 
 import Foreign
 import Foreign.C.Types
+import Foreign.C.String
 
 type WLR_log_importance = CInt
 
@@ -30,3 +31,16 @@ type WLR_log_func_t = ()
 
 foreign import capi "wlr/util/log.h wlr_log_init"
     wlr_log_init :: WLR_log_importance -> FunPtr WLR_log_func_t -> IO ()
+
+foreign import capi "wlr/util/log.h _wlr_log"
+  c_wlr_log :: WLR_log_importance -> CString -> CString -> IO ()
+
+-- | Haskell wrapper for the C `_wlr_log` function.
+--   Passes a format string ("%s") and the actual message.
+--   This is a hack to get around the variadic function, it reduces the expressivness of the function
+--   but its not hard to convert any values to strings before passing them to be logged
+wlr_log :: WLR_log_importance -> String -> IO ()
+wlr_log level message = 
+    withCString "%s" $ \fmt -> 
+        withCString message $ \c_message -> 
+            c_wlr_log level fmt c_message
