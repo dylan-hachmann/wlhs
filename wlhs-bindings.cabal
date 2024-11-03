@@ -53,6 +53,7 @@ library
         WLR.Util.Edges
         WLR.Util.Log
         WLR.Version
+        Xkbcommon.Xkbcommon
 
     pkgconfig-depends:  wlroots ==0.17.3, wayland-server, pixman-1
     hs-source-dirs:     src
